@@ -126,7 +126,7 @@ module SmarterCSV
         # file into memory at once, and eof => true
         # read one line.. this uses the input_record_separator $/
         # which we set previously!
-        line = f.readline
+        line = f.readline.encode(options[:file_encoding], invalid: :replace)
         line_count += 1
 
         print "processing line %10d\r" % line_count if options[:verbose]
