@@ -264,6 +264,7 @@ module SmarterCSV
     # count how many of the pre-defined line-endings we find
     # ignoring those contained within quote characters
     filehandle.each_char do |c|
+      c.encode! options[:file_encoding], invalid: :replace
       quoted_char = !quoted_char if c == options[:quote_char]
       next if quoted_char || c !~ /\r|\n|\r\n/
       counts[c] += 1
