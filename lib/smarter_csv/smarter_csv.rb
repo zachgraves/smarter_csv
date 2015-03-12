@@ -56,7 +56,10 @@ module SmarterCSV
         # process the header line in the CSV file..
         # the first line of a CSV file contains the header... 
         # it might be commented out, so we need to read it anyhow
-        header = f.readline.sub(options[:comment_regexp],'').chomp(options[:row_sep])
+        header = f.readline.encode(options[:file_encoding], invalid: :replace)
+        header.sub!(options[:comment_regexp], '')
+        header.chomp!(options[:row_sep])
+
         line_count += 1
         header = header.gsub(options[:strip_chars_from_headers], '') if options[:strip_chars_from_headers]
 
@@ -146,11 +149,11 @@ module SmarterCSV
         if (line =~ %r{#{options[:quote_char]}}) and (! options[:force_simple_split])
           dataA = CSV.parse( line, csv_options ).flatten.collect!{|x| x.nil? ? '' : x} # to deal with nil values from CSV.parse
         else
-          dataA =  line.split(options[:col_sep])
+          dataA = line.split(options[:col_sep])
         end
 
-        dataA.map!{|x| x.gsub(%r/options[:quote_char]/,'') }
-        dataA.map!{|x| x.strip}  if options[:strip_whitespace]
+        dataA.map! { |x| x.gsub(%r/options[:quote_char]/, '') }
+        dataA.map! { |x| x.strip } if options[:strip_whitespace]
 
         hash = Hash.zip(headerA,dataA)  # from Facets of Ruby library
 
